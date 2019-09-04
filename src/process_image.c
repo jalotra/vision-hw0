@@ -39,7 +39,7 @@ float get_pixel(image im, int x, int y, int c)
     float(*data_matrix) [im.w][im.h] = data;
     float value = *(*(*(data_matrix +c) + x) + y);
 
-    free_image(im);
+    // free_image(im);
     return value; 
     // free_image(im);
 }
@@ -133,12 +133,37 @@ image rgb_to_grayscale(image im)
 
 void shift_image(image im, int c, float v)
 {
-    // TODO Fill this in
+    // Shift image adds a float value v to every pixel in im.data
+    // SO I can use the set pixel function 
+        for(int width = 0 ; width < im.w; width++)
+        {
+            for(int height = 0; height < im.h ; height++)
+            {
+                float new_v = get_pixel(im, width, height, c) + v;
+                set_pixel(im, width, height, c, new_v);
+            }
+        }
+    
 }
 
 void clamp_image(image im)
 {
     // TODO Fill this in
+    // Any pixel value that goes below 0 turn up to be zero 
+    // And any pixel value that goes above 1 turns up to be 1 
+    for(int channels = 0; channels < im.c ; channels++)
+    {
+        for(int width = 0; width < im.w; width++) 
+        {
+            for(int height = 0; height < im.h ; height++)
+            {
+                float value_to_check = get_pixel(im, width, height, channels);
+                if(value_to_check < 0){value_to_check = 0;}
+                else if(value_to_check > 1){value_to_check = 1;}
+                set_pixel(im, width, height, channels, value_to_check);
+            }
+        }
+    }
 }
 
 
