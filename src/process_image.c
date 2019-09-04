@@ -140,31 +140,33 @@ void shift_image(image im, int c, float v)
             for(int height = 0; height < im.h ; height++)
             {
                 float new_v = get_pixel(im, width, height, c) + v;
+                if(new_v < 0){new_v = 0;}
+                if(new_v >1){new_v = 1;}
                 set_pixel(im, width, height, c, new_v);
             }
         }
     
 }
 
-void clamp_image(image im)
-{
-    // TODO Fill this in
-    // Any pixel value that goes below 0 turn up to be zero 
-    // And any pixel value that goes above 1 turns up to be 1 
-    for(int channels = 0; channels < im.c ; channels++)
-    {
-        for(int width = 0; width < im.w; width++) 
-        {
-            for(int height = 0; height < im.h ; height++)
-            {
-                float value_to_check = get_pixel(im, width, height, channels);
-                if(value_to_check < 0){value_to_check = 0;}
-                else if(value_to_check > 1){value_to_check = 1;}
-                set_pixel(im, width, height, channels, value_to_check);
-            }
-        }
-    }
-}
+// void clamp_image(image im)
+// {
+//     // TODO Fill this in
+//     // Any pixel value that goes below 0 turn up to be zero 
+//     // And any pixel value that goes above 1 turns up to be 1 
+//     for(int channels = 0; channels < im.c ; channels++)
+//     {
+//         for(int width = 0; width < im.w; width++) 
+//         {
+//             for(int height = 0; height < im.h ; height++)
+//             {
+//                 float value_to_check = get_pixel(im, width, height, channels);
+//                 if(value_to_check < 0){value_to_check = 0;}
+//                 else if(value_to_check > 1){value_to_check = 1;}
+//                 set_pixel(im, width, height, channels, value_to_check);
+//             }
+//         }
+//     }
+// }
 
 
 // These might be handy
