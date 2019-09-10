@@ -50,9 +50,9 @@ def shiftImage():
 def colorspace_and_saturation():
     im = load_image("data/ekta_khajiar.jpg")
     rgb_to_hsv(im)
-    shift_image(im, 1, .2)
-    clamp_image(im)
-    hsv_to_rgb(im)
+    # shift_image(im, 1, .2)
+    # shiftImage(im)
+    # hsv_to_rgb(im)
     save_image(im, "Tryit_Photos/ekta_saturated")
 
 if __name__ == "__main__":
@@ -63,12 +63,13 @@ if __name__ == "__main__":
         tryit_made_figures()
     
     #Utlity Functions been called
-    for i in range(3):
-        get_set_pixels(i)
-    grayscaleImage()
-    shiftImage()
-    clampImage()
-    # colorspace_and_saturation()
+    # for i in range(3):
+    #     get_set_pixels(i)
+    # grayscaleImage()
+    # shiftImage()
+    # clampImage()
+
+    colorspace_and_saturation()
 
 
 
