@@ -182,7 +182,98 @@ float three_way_min(float a, float b, float c)
 
 void rgb_to_hsv(image im)
 {
-    // TODO Fill this in
+    // Started working on changing rgb to hsv
+    // WE HAVE THREE VARIABLES HUE,SATURATION AND VALUE
+    
+    // FOR VALUE 
+    // V = max(r,g,b)
+    
+    // FOR SATURATION We see how far are the r,g,b are situation 
+    // m = min(r,g,b)
+    // C = V - m
+    // S = C/V          // except for the black pixel or (r,g,b) ={0,0,0}
+
+    // FOR CALCULATING HUE 
+    // we ARE given the best descriptiin in readme.md
+    // PLease have a look
+
+
+    // CODE STARTS
+    // wE START OFF WITH GETTING PIXELS FROM THE get_pixel method and 
+    // calculate the differnt values from the above formulas that are
+    //given
+
+    // FINALLY REmember to replace R channel with H, the G channel with S, B channel with V
+
+    
+    for(int row = 0 ; row < im.w ; row++)
+    {
+        for(int height = 0 ; height < im.h ; height ++)
+        {
+            // Get pixel
+            float r = get_pixel(im, row, height, 0);
+            float g = get_pixel(im, row, height, 1);
+            float b = get_pixel(im, row, height, 2);
+
+            // Calculate value, saturation and hue
+            float value = calculate_value(r,g,b);
+            float saturation = calculate_saturation(r,g,b);
+            float hue = calculate_hue(r,g,b);
+
+            // CHnage values respectively
+            r = hue;
+            g = saturation;
+            b = value;
+
+            // FInally set_pixel 
+            // definition set_pixel(image im, int x, int y, int c, float v)
+            set_pixel(im, row, height, 0, r);
+            set_pixel(im, row, height, 1, g);
+            set_pixel(im, row, height, 2, b);
+        }
+    }
+    
+
+
+
+}
+
+float calculate_value(float a, float b, float c)
+{
+    return three_way_max(a,b,c);
+}
+
+float calculate_saturation(float a, float b , float c)
+{   
+    float S;
+    if(a != 0 && b != 0 && c != 0) 
+    {  
+        S = (three_way_max(a,b,c) - three_way_min(a,b,c))/three_way_max(a,b,c); 
+    }
+    else
+    {
+        S = 0;
+    }
+    
+return S;
+}
+
+float calculate_hue(float r, float g, float b)
+{
+    float V = three_way_max(r, g, b);
+    float H = 0;
+    float C = three_way_max(r, g, b) - three_way_min(r, g, b);
+
+    if(V == r) H =  (g-b)/C;
+    else if(V == g) H = (b-r)/C + 2;
+    else if(V == b) H = (r-g)/C + 4;
+    else if (C == 0) H = 0;
+
+    if(H < 0) H = H/6 + 1;
+    else H = H/6;
+
+
+return H;   
 }
 
 void hsv_to_rgb(image im)

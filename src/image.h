@@ -17,6 +17,12 @@ void hsv_to_rgb(image im);
 void shift_image(image im, int c, float v);
 void clamp_image(image im);
 
+// some functions that I defined
+// namely calculate_hue, calculate_saturation, calculate_value
+float calculate_hue(float a, float b , float c);
+float calculate_saturation(float a, float b , float c);
+float calculate_value(float a, float b , float c);
+
 
 // Loading and saving
 image make_image(int w, int h, int c);
