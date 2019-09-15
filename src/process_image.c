@@ -30,17 +30,10 @@ float get_pixel(image im, int x, int y, int c)
     // int height = im_ptr->h;
     // int width = im_ptr->w;
     // int channels = im_ptr->c;
-    image * im_ptr;
-    im_ptr = &im;
-    float *data = im_ptr->data;
-    // float value = *(*(*(data+c)+x)+y));
-    // return value;
+    
+    int pixel_location = x + y*im.w + c*im.w*im.h;
 
-    float(*data_matrix) [im.w][im.h] = data;
-    float value = *(*(*(data_matrix +c) + x) + y);
-
-    // free_image(im);
-    return value; 
+    return im.data[pixel_location];
     // free_image(im);
 }
 
@@ -58,13 +51,9 @@ void set_pixel(image im, int x, int y, int c, float v)
         return;
         
     // TODO Fill this in
-    image * im_ptr;
-    im_ptr = &im;
-    float * data = im_ptr->data;
-
-    float(*data_matrix) [im.w][im.h] = data;
-    float * value = (*(*(data_matrix +c) + x) + y);
-    *value = v; 
+    int pixel_location = x + y*im.w + c*im.h*im.w;
+    float *pixel_value = &im.data[pixel_location];
+    *pixel_value = v; 
 
     // free_image(im);
 
@@ -206,19 +195,20 @@ void rgb_to_hsv(image im)
     // FINALLY REmember to replace R channel with H, the G channel with S, B channel with V
 
     
-    for(int row = 0 ; row < im.w ; row++)
+    for(int column = 0 ; column < im.w ; column++)
     {
-        for(int height = 0 ; height < im.h ; height ++)
+        for(int row = 0 ; row < im.h ; row ++)
         {
             // Get pixel
-            float r = get_pixel(im, row, height, 0);
-            float g = get_pixel(im, row, height, 1);
-            float b = get_pixel(im, row, height, 2);
+            float r = get_pixel(im, column, row, 0);
+            float g = get_pixel(im, column, row, 1);
+            float b = get_pixel(im, column, row, 2);
 
             // Calculate value, saturation and hue
             float value = calculate_value(r,g,b);
-            float saturation = calculate_saturation(r,g,b);
             float hue = calculate_hue(r,g,b);
+            float saturation = calculate_saturation(r,g,b);
+            
 
             // CHnage values respectively
             r = hue;
@@ -227,9 +217,9 @@ void rgb_to_hsv(image im)
 
             // FInally set_pixel 
             // definition set_pixel(image im, int x, int y, int c, float v)
-            set_pixel(im, row, height, 0, r);
-            set_pixel(im, row, height, 1, g);
-            set_pixel(im, row, height, 2, b);
+            set_pixel(im, column, row, 0, r);
+            set_pixel(im, column, row, 1, g);
+            set_pixel(im, column, row, 2, b);
         }
     }
     
@@ -261,12 +251,12 @@ return S;
 float calculate_hue(float r, float g, float b)
 {
     float V = three_way_max(r, g, b);
-    float H = 0;
+    float H ;
     float C = three_way_max(r, g, b) - three_way_min(r, g, b);
 
     if(V == r) H =  (g-b)/C;
-    else if(V == g) H = (b-r)/C + 2;
-    else if(V == b) H = (r-g)/C + 4;
+    else if(V == g) H = ((b-r)/C) + 2;
+    else if(V == b) H = ((r-g)/C) + 4;
     else if (C == 0) H = 0;
 
     if(H < 0) H = H/6 + 1;
@@ -276,7 +266,101 @@ float calculate_hue(float r, float g, float b)
 return H;   
 }
 
+// void see_the_value_image(im)
+// {
+//     // the value image is analogous to blue channel in the RGB image
+//     // SO I have to start from  
+// }
+
 void hsv_to_rgb(image im)
 {
     // TODO Fill this in
+    // Lets do this
+    // ALgorithmic steps to take
+
+    // I have (H,S,V) values and I want (R,G,B) values
+    // My  H, S ,V lies bw (0,1] 
+    // Multily the H by 360 as the algorithm is given taken in consideration that 
+    // H represents angle
+
+    // 1. fIND Chroma = V*S
+    // 2. Define H' =  H/60;
+    // 3. Find X = C*(  1-abs(H'mod2 - 1))
+
+    // And R,G,B == One pair among 6 values
+    // See this wiki page https://en.wikipedia.org/wiki/HSL_and_HSV#HSV_to_RGB
+    // FInally add m = V - C to R,G,B produced 
+
+
+    // CODE starts
+    for(int column = 0 ; column < im.w ; column++)
+    {
+        for(int row = 0 ; row < im.h ; row ++)
+        {
+            // varibles declaration
+            float r = 0,b = 0,g = 0;
+            // Get hsv values
+            float hue = get_pixel(im, column, row, 0) * 360 ;
+            float saturation = get_pixel(im, column, row, 1);
+            float value = get_pixel(im, column, row, 2);
+
+            // Calculate value, saturation and hue
+            float C = value*saturation;
+            hue = hue/60;
+            float X = C*(1 - abs((int)hue % 2 -1 ));
+
+            if(0<=hue<=1)
+            {
+                r = C;
+                g = X;
+            }
+            else if(1<=hue<=2)
+            {
+                r = X;
+                g = C;
+
+            }
+            else if(2<=hue<=3)
+            {
+                g = C;
+                b = X;
+            }
+            else if(3<=hue<=4)
+            {
+                g = X;
+                b = C;
+            }
+            else if(4<=hue<=5)
+            {
+                r = X;
+                b = C;
+            }
+            else if(5<=hue<=6)
+            {
+                r = C;
+                b = C; 
+            }
+            else if(hue < 0)
+            {
+                r = 0;
+                g = 0;
+                b = 0;
+            }
+
+            // Finally claculate m and add to all rbgs
+            float m = value - C;
+            r += m;
+            b += m;
+            g += m; 
+            
+
+            // FInally set_pixel 
+            // definition set_pixel(image im, int x, int y, int c, float v)
+            set_pixel(im, column, row, 0, r);
+            set_pixel(im, column, row, 1, g);
+            set_pixel(im, column, row, 2, b);
+        }
+    }
+    
+
 }
