@@ -30,17 +30,9 @@ float get_pixel(image im, int x, int y, int c)
     // int height = im_ptr->h;
     // int width = im_ptr->w;
     // int channels = im_ptr->c;
-    image * im_ptr;
-    im_ptr = &im;
-    float *data = im_ptr->data;
-    // float value = *(*(*(data+c)+x)+y));
-    // return value;
-
-    float(*data_matrix) [im.w][im.h] = data;
-    float value = *(*(*(data_matrix +c) + x) + y);
-
-    // free_image(im);
-    return value; 
+    
+    int pixel_location = x + y*im.w + c*im.w*im.h;
+    return im.data[pixel_location];
     // free_image(im);
 }
 
@@ -58,13 +50,9 @@ void set_pixel(image im, int x, int y, int c, float v)
         return;
         
     // TODO Fill this in
-    image * im_ptr;
-    im_ptr = &im;
-    float * data = im_ptr->data;
-
-    float(*data_matrix) [im.w][im.h] = data;
-    float * value = (*(*(data_matrix +c) + x) + y);
-    *value = v; 
+    int pixel_location = x + y*im.w + c*im.h*im.w;
+    float *pixel_value = &im.data[pixel_location];
+    *pixel_value = v; 
 
     // free_image(im);
 
